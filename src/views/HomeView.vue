@@ -4,19 +4,7 @@
       <VRow>
         <VCol cols="3">
           <nav>
-            <VList>
-              <VListItem
-                v-for="nameValueItem in nameValueStore.nameValueList"
-                :key="nameValueItem.name"
-                :title="nameValueItem.name"
-                :subtitle="nameValueItem.value"
-                @click="onSelectElement(nameValueItem)"
-              >
-                <template #prepend>
-                  <div class="mr-3">{ }</div>
-                </template>
-              </VListItem>
-            </VList>
+            <NameValueList :list="nameValueStore.nameValueList" @select-element="onSelectElement" />
           </nav>
         </VCol>
         <VCol>
@@ -26,18 +14,12 @@
               icon="mdi-information"
               text="Выберите элемент"
             />
-            <form v-else @submit.prevent="nameValueStore.editElement(newItemValue)">
-              <label>
-                {{ nameValueStore.currentEditableElement?.name }}
-                <VTextField
-                  ref="inputRef"
-                  type="text"
-                  placeholder="Введите новое значение для элемента"
-                  v-model="newItemValue"
-                />
-              </label>
-              <VBtn type="submit">Сохранить</VBtn>
-            </form>
+            <NameValueEditForm
+              v-else
+              :name-value-item="nameValueStore.currentEditableElement"
+              v-model:value="newItemValue"
+              @update:value="onEditElement"
+            />
           </section>
         </VCol>
       </VRow>
@@ -46,21 +28,20 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+import NameValueEditForm from '@/components/NameValueEditForm.vue'
+import NameValueList from '@/components/NameValueList.vue'
 import type { NameValue } from '@/models/NameValue'
 import { useNameValueStore } from '@/stores/nameValueStore'
-import { ref, watch } from 'vue'
 
 const nameValueStore = useNameValueStore()
 const newItemValue = ref('')
-const inputRef = ref<HTMLInputElement>()
-
-watch(
-  () => nameValueStore.currentEditableElement,
-  (currentEditableElement) => (newItemValue.value = currentEditableElement?.value || '')
-)
 
 function onSelectElement(element: NameValue) {
   nameValueStore.setEditableElement(element.name)
-  inputRef.value?.focus()
+}
+
+function onEditElement(elementValue: string) {
+  nameValueStore.editElement(elementValue)
 }
 </script>
