@@ -1,7 +1,7 @@
 <template>
   <form @submit.prevent="onEditElement(newItemValue)">
     <label>
-      {{ nameValueStore.currentEditableElement?.name }}
+      {{ props.nameValueItem?.name }}
       <VTextField
         ref="inputRef"
         type="text"
@@ -16,9 +16,7 @@
 <script setup lang="ts">
 import { nextTick, ref, watch } from 'vue'
 import type { NameValue } from '@/models/NameValue'
-import { useNameValueStore } from '@/stores/nameValueStore'
 
-const nameValueStore = useNameValueStore()
 const newItemValue = ref('')
 const inputRef = ref<HTMLInputElement>()
 
